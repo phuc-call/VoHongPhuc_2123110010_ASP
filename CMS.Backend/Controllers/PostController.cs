@@ -9,16 +9,31 @@ namespace CMS.Backend.Controllers
     {
         private readonly ApplicationDbContext _context;
 
-        // Constructor inject DbContext
         public PostController(ApplicationDbContext context)
         {
             _context = context;
         }
 
+        // Xóa hàm Index cũ ở đây, chỉ giữ hàm này
         public IActionResult Index()
         {
-            var posts = _context.Posts.ToList();
+            var posts = _context.Posts
+                .Include(p => p.Category)
+                .OrderByDescending(p => p.CreatedDate)
+                .ToList();
             return View(posts);
+        }
+
+        public IActionResult Details(int id)
+        {
+            var post = _context.Posts
+                .Include(p => p.Category)
+                .FirstOrDefault(p => p.Id == id);
+
+            if (post == null)
+                return NotFound();
+
+            return View(post);
         }
     }
 }

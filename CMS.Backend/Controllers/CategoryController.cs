@@ -26,5 +26,50 @@ namespace CMS.Backend.Controllers
             var data = _context.Categories.ToList();
             return View(data);
         }
+
+        [HttpGet]
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: Lưu danh mục mới
+        [HttpPost]
+        public IActionResult Create(Category model)
+        {
+            _context.Categories.Add(model);
+            _context.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
+        // Xóa danh mục
+        public IActionResult Delete(int id)
+        {
+            var category = _context.Categories.Find(id);
+            if (category != null)
+            {
+                _context.Categories.Remove(category);
+                _context.SaveChanges();
+            }
+            return RedirectToAction("Index");
+        }
+
+        // GET: Hiện form sửa
+        [HttpGet]
+        public IActionResult Edit(int id)
+        {
+            var category = _context.Categories.Find(id);
+            if (category == null) return NotFound();
+            return View(category);
+        }
+
+        // POST: Lưu thay đổi
+        [HttpPost]
+        public IActionResult Edit(Category model)
+        {
+            _context.Categories.Update(model);
+            _context.SaveChanges();
+            return RedirectToAction("Index");
+        }
     }
 }
