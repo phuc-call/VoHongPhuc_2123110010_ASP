@@ -1,0 +1,41 @@
+﻿@model CMS.Data.Entities.Customer
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Sửa khách hàng";
+}
+
+<div class="card shadow">
+    <div class="card-header bg-warning text-dark">
+        <h5 class="mb-0">CHỈNH SỬA KHÁCH HÀNG</h5>
+    </div>
+    <div class="card-body">
+        <form asp-action="Edit" method="post">
+            <input type="hidden" asp-for="Id" />
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Họ và tên:</label>
+                    <input asp-for="FullName" class="form-control" required />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Email:</label>
+                    <input asp-for="Email" class="form-control" type="email" required />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Điện thoại:</label>
+                    <input asp-for="Phone" class="form-control" />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Mật khẩu mới:</label>
+                    <input type="password" name="NewPassword" class="form-control"
+                           placeholder="Để trống nếu không muốn đổi" />
+                </div>
+                <div class="col-md-12 mb-3">
+                    <label class="form-label fw-bold">Địa chỉ:</label>
+                    <input asp-for="Address" class="form-control" />
+                </div>
+            </div>
+            <button type="submit" class="btn btn-warning">Cập nhật</button>
+            <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+        </form>
+    </div>
+</div>

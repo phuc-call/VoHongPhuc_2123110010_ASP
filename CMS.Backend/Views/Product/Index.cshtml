@@ -1,0 +1,44 @@
+﻿@model IEnumerable<CMS.Data.Entities.Product>
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Sản phẩm";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="text-dark">DANH SÁCH SẢN PHẨM</h2>
+    <a asp-action="Create" class="btn btn-success">
+        <i class="bi bi-plus-circle"></i> Thêm sản phẩm mới
+    </a>
+</div>
+
+<table class="table table-hover shadow-sm border">
+    <thead class="table-light">
+        <tr>
+            <th>ID</th>
+            <th>Tên sản phẩm</th>
+            <th>Giá</th>
+            <th>Tồn kho</th>
+            <th>Danh mục</th>
+            <th style="width:150px">Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.Name</td>
+                <td>@item.Price.ToString("N0") đ</td>
+                <td>@item.StockQuantity</td>
+                <td>@item.CategoryProduct?.Name</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id"
+                       class="btn btn-sm btn-outline-warning">Sửa</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id"
+                       class="btn btn-sm btn-outline-danger"
+                       onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')">Xóa</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
