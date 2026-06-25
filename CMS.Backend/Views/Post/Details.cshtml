@@ -1,32 +1,92 @@
 ﻿@model CMS.Data.Entities.Post
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Chi tiết bài viết";
+}
 
-<div class="container mt-5">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/Post">Danh sách bài viết</a></li>
-            <li class="breadcrumb-item active">Chi tiết bài viết</li>
-        </ol>
-    </nav>
+<style>
+    @@import url('https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@700&family=Be+Vietnam+Pro:wght@400;500;600&display=swap');
+    .post-detail { font-family: 'Be Vietnam Pro', sans-serif; color: #3D3D3D; }
+    .post-detail h1 {
+        font-family: 'Barlow Semi Condensed', sans-serif;
+        font-weight: 700; font-size: 32px; color: #2C2C2C;
+    }
+    .post-detail .meta { font-size: 13px; color: #888888; margin-bottom: 16px; }
+    .post-detail .badge-cat {
+        background: #FF8C00; color: #fff;
+        font-size: 12px; font-weight: 600;
+        padding: 4px 12px; border-radius: 4px;
+        margin-right: 8px;
+    }
+    .post-detail .post-content { font-size: 15px; line-height: 1.8; }
+    .btn-back {
+        background: #2C2C2C; color: #fff; border: none;
+        border-radius: 6px; font-size: 14px; font-weight: 600;
+        padding: 9px 20px; text-decoration: none;
+        display: inline-block; transition: background .2s;
+    }
+    .btn-back:hover { background: #1A1A1A; color: #fff; }
+    .btn-edit {
+        background: #FF8C00; color: #fff; border: none;
+        border-radius: 6px; font-size: 14px; font-weight: 600;
+        padding: 9px 20px; text-decoration: none;
+        display: inline-block; transition: background .2s; margin-left: 8px;
+    }
+    .btn-edit:hover { background: #e07b00; color: #fff; }
+</style>
 
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-            <h1 class="display-4 fw-bold text-primary">@Model.Title</h1>
-            <p class="text-muted">Đăng ngày: @Model.CreatedDate.ToString("dd/MM/yyyy HH:mm")</p>
-            <hr />
-            
-            <div class="text-center mb-4">
-                <img src="@Model.ImageUrl" class="img-fluid rounded shadow" alt="Post Image" style="width: 100%;">
+<div class="container mt-4 post-detail">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0" style="font-size:13px;">
+                <li class="breadcrumb-item">
+                    <a asp-action="Index" style="color:#E8191A;">Danh sách bài viết</a>
+                </li>
+                <li class="breadcrumb-item active">Chi tiết</li>
+            </ol>
+        </nav>
+        <div>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-edit">
+                <i class="bi bi-pencil me-1"></i> Sửa
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm" style="border:0.5px solid #D9D9D9; border-radius:12px;">
+        <div class="card-body p-4">
+            <h1>@Model.Title</h1>
+
+            <div class="meta">
+                @if (Model.Category != null)
+                {
+                    <span class="badge-cat">@Model.Category.Name</span>
+                }
+                <span>
+                    <i class="bi bi-calendar3 me-1"></i>
+                    @Model.CreatedDate.ToString("dd/MM/yyyy HH:mm")
+                </span>
             </div>
 
-            <div class="post-content fs-5 leading-lg">
-                @Model.Content
+            <hr style="border-color:#D9D9D9;" />
+
+            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+            {
+                <div class="mb-4 text-center">
+                    <img src="@Model.ImageUrl" alt="@Model.Title"
+                         style="max-width:100%; max-height:420px;
+                                object-fit:cover; border-radius:10px;
+                                border:1px solid #D9D9D9;" />
+                </div>
+            }
+
+            <div class="post-content">
+                @Html.Raw(Model.Content)
             </div>
 
-            <div class="mt-5 border-top pt-3">
-                <a href="/Post" class="btn btn-secondary">
-                    <i class="bi bi-arrow-left"></i> Quay lại danh sách
-                </a>
-            </div>
+            <hr style="border-color:#D9D9D9; margin-top:32px;" />
+            <a asp-action="Index" class="btn-back">
+                <i class="bi bi-arrow-left me-1"></i> Quay lại danh sách
+            </a>
         </div>
     </div>
 </div>

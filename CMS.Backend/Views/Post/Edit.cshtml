@@ -4,54 +4,106 @@
     ViewData["Title"] = "Sửa bài viết";
 }
 
-<div class="container mt-4">
-    <div class="card shadow">
-        <div class="card-header bg-warning text-dark">
-            <h4 class="mb-0">
-                <i class="bi bi-pencil-square"></i> CHỈNH SỬA BÀI VIẾT
-            </h4>
+<style>
+    @@import url('https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600;700&family=Be+Vietnam+Pro:wght@400;500;600&display=swap');
+    .post-form { font-family: 'Be Vietnam Pro', sans-serif; }
+    .post-form .card { border: 0.5px solid #D9D9D9; border-radius: 12px; }
+    .post-form .card-header {
+        background: #FF8C00; color: #fff;
+        border-radius: 12px 12px 0 0; padding: 16px 24px;
+    }
+    .post-form .card-header h4 {
+        font-family: 'Barlow Semi Condensed', sans-serif;
+        font-weight: 700; font-size: 20px; margin: 0;
+    }
+    .post-form .form-label { font-weight: 600; font-size: 14px; color: #2C2C2C; }
+    .post-form .form-control, .post-form .form-select {
+        border: 1px solid #D9D9D9; border-radius: 6px;
+        font-size: 14px; color: #3D3D3D;
+    }
+    .post-form .form-control:focus, .post-form .form-select:focus {
+        border-color: #E8191A; box-shadow: 0 0 0 2px rgba(232,25,26,0.12);
+    }
+    .btn-primary-orange {
+        background: #FF8C00; color: #fff; border: none;
+        border-radius: 6px; font-size: 14px; font-weight: 600;
+        padding: 10px 0; width: 100%; cursor: pointer;
+        transition: background .2s;
+    }
+    .btn-primary-orange:hover { background: #e07b00; }
+    .btn-secondary-dark {
+        background: #2C2C2C; color: #fff; border: none;
+        border-radius: 6px; font-size: 14px; font-weight: 600;
+        padding: 10px 0; width: 100%; cursor: pointer;
+        text-align: center; text-decoration: none; display: block;
+        transition: background .2s; margin-top: 8px;
+    }
+    .btn-secondary-dark:hover { background: #1A1A1A; color: #fff; }
+</style>
+
+<div class="container mt-4 post-form">
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h4><i class="bi bi-pencil-square me-2"></i>CHỈNH SỬA BÀI VIẾT</h4>
         </div>
-        <div class="card-body">
+        <div class="card-body p-4">
             <form asp-action="Edit" method="post" enctype="multipart/form-data">
                 <input type="hidden" asp-for="Id" />
 
-                <div class="row">
+                <div class="row g-4">
                     <div class="col-md-8">
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Tiêu đề bài viết:</label>
+                            <label class="form-label">Tiêu đề bài viết</label>
                             <input asp-for="Title" class="form-control" />
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Nội dung chi tiết:</label>
-                            <textarea asp-for="Content" class="form-control" rows="10"></textarea>
+                            <label class="form-label">Nội dung chi tiết</label>
+                            <div id="quill-editor" style="height: 350px; background:#fff; border-radius: 0 0 6px 6px;"></div>
+                            <textarea asp-for="Content" id="Content" style="display:none;"></textarea>
                         </div>
                     </div>
 
                     <div class="col-md-4">
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Chuyên mục:</label>
+                            <label class="form-label">Chuyên mục</label>
                             <select asp-for="CategoryId" class="form-select"
                                     asp-items="ViewBag.CategoryList">
                                 <option value="">-- Chọn danh mục --</option>
                             </select>
                         </div>
+
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Link ảnh đại diện (URL):</label>
-                            <input asp-for="ImageUrl" class="form-control" />
+                            <label class="form-label">Ảnh hiện tại</label>
+                            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                            {
+                                <img src="@Model.ImageUrl" id="imgPreview"
+                                     style="width:100%; height:150px; object-fit:cover;
+                                            border-radius:8px; border:1px solid #D9D9D9;" />
+                            }
+                            else
+                            {
+                                <img id="imgPreview" src="#"
+                                     style="display:none; width:100%; height:150px;
+                                            object-fit:cover; border-radius:8px;
+                                            border:1px solid #D9D9D9;" />
+                            }
+                            <label class="form-label mt-2">Upload ảnh mới (nếu muốn đổi)</label>
+                            <input type="file" name="uploadImage" class="form-control"
+                                   accept="image/*" onchange="previewImage(this)" />
                         </div>
+
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Ngày đăng:</label>
+                            <label class="form-label">Ngày đăng</label>
                             <input asp-for="CreatedDate" type="date" class="form-control" />
                         </div>
-                        <hr />
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-warning">
-                                <i class="bi bi-save"></i> Cập nhật thay đổi
-                            </button>
-                            <a asp-action="Index" class="btn btn-secondary">
-                                <i class="bi bi-arrow-left"></i> Quay lại danh sách
-                            </a>
-                        </div>
+
+                        <hr style="border-color:#D9D9D9;" />
+                        <button type="submit" class="btn-primary-orange">
+                            <i class="bi bi-save me-1"></i> Cập nhật thay đổi
+                        </button>
+                        <a asp-action="Index" class="btn-secondary-dark">
+                            <i class="bi bi-arrow-left me-1"></i> Quay lại
+                        </a>
                     </div>
                 </div>
             </form>
@@ -60,12 +112,45 @@
 </div>
 
 @section Scripts {
-    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+    <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet" />
+    <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
     <script>
-        ClassicEditor
-            .create(document.querySelector('#Content'))
-            .catch(error => {
-                console.error(error);
-            });
+        var quill = new Quill('#quill-editor', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    [{ 'header': [1, 2, 3, false] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                    ['blockquote', 'code-block'],
+                    ['link', 'image'],
+                    [{ 'color': [] }, { 'background': [] }],
+                    ['clean']
+                ]
+            }
+        });
+
+        // Load nội dung cũ vào Quill khi Edit
+        var existingContent = document.querySelector('#Content').value;
+        if (existingContent) {
+            quill.root.innerHTML = existingContent;
+        }
+
+        // Đồng bộ nội dung Quill vào textarea khi submit
+        document.querySelector('form').addEventListener('submit', function () {
+            document.querySelector('#Content').value = quill.root.innerHTML;
+        });
+
+        function previewImage(input) {
+            var preview = document.getElementById('imgPreview');
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
     </script>
 }

@@ -22,7 +22,7 @@ namespace CMS.Backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(string username, string password)
+        public async Task<IActionResult> Login(string username, string password, string returnUrl)
         {
             var user = _context.Users.FirstOrDefault(
                 u => u.Username == username && u.PasswordHash == password);
@@ -30,11 +30,11 @@ namespace CMS.Backend.Controllers
             if (user != null)
             {
                 var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, user.Username),
-                    new Claim(ClaimTypes.Role, user.Role),
-                    new Claim("FullName", user.FullName)
-                };
+        {
+            new Claim(ClaimTypes.Name, user.Username),
+            new Claim(ClaimTypes.Role, user.Role),
+            new Claim("FullName", user.FullName)
+        };
 
                 var claimsIdentity = new ClaimsIdentity(
                     claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -42,6 +42,10 @@ namespace CMS.Backend.Controllers
                 await HttpContext.SignInAsync(
                     CookieAuthenticationDefaults.AuthenticationScheme,
                     new ClaimsPrincipal(claimsIdentity));
+
+                // Nếu có ReturnUrl thì quay về đó, không thì về trang chủ
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    return Redirect(returnUrl);
 
                 return RedirectToAction("Index", "Home");
             }

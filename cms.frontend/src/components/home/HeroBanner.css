@@ -1,0 +1,119 @@
+/* src/components/home/HeroBanner.css */
+.sn-hero {
+    position: relative;
+    height: 520px;
+    overflow: hidden;
+    background: var(--sn-color-secondary);
+}
+
+.sn-hero--loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sn-hero__slide {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.7s ease;
+    display: flex;
+    align-items: center;
+}
+
+.sn-hero__slide.is-active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.sn-hero__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(26, 26, 26, 0.82) 0%, rgba(26, 26, 26, 0.35) 55%, rgba(26, 26, 26, 0.1) 100%);
+}
+
+.sn-hero__content {
+    position: relative;
+    z-index: 2;
+    max-width: 560px;
+    color: #FFFFFF;
+}
+
+.sn-hero__kicker {
+    font-family: var(--sn-font-mono);
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--sn-color-accent);
+    display: inline-block;
+    margin-bottom: 14px;
+}
+
+.sn-hero__title {
+    font-family: var(--sn-font-display);
+    font-weight: 800;
+    font-size: 48px;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+}
+
+.sn-hero__subtitle {
+    font-family: var(--sn-font-body);
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 28px;
+    line-height: 1.6;
+}
+
+.sn-hero__cta {
+    display: inline-flex;
+    align-items: center;
+    background: var(--sn-color-primary);
+    color: #FFFFFF;
+    font-family: var(--sn-font-body);
+    font-weight: 600;
+    font-size: 14px;
+    padding: 13px 28px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.sn-hero__cta:hover {
+    background: #c41315;
+    color: #FFFFFF;
+    transform: translateX(2px);
+}
+
+.sn-hero__dots {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 3;
+}
+
+.sn-hero__dot {
+    width: 28px;
+    height: 4px;
+    border: none;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.sn-hero__dot.is-active {
+    background: var(--sn-color-primary);
+}
+
+@media (max-width: 768px) {
+    .sn-hero { height: 420px; }
+    .sn-hero__title { font-size: 32px; }
+}

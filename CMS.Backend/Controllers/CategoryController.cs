@@ -5,6 +5,7 @@
  * vesion 1
  * **/
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using CMS.Data.Entities;
 using CMS.Data;
 
@@ -14,7 +15,6 @@ namespace CMS.Backend.Controllers
     {
         private readonly ApplicationDbContext _context;
 
-        // "Tiêm" kết nối vào Controller
         public CategoryController(ApplicationDbContext context)
         {
             _context = context;
@@ -22,7 +22,6 @@ namespace CMS.Backend.Controllers
 
         public IActionResult Index()
         {
-            // Lấy dữ liệu THẬT từ bảng Categories trong SQL
             var data = _context.Categories.ToList();
             return View(data);
         }
@@ -33,7 +32,6 @@ namespace CMS.Backend.Controllers
             return View();
         }
 
-        // POST: Lưu danh mục mới
         [HttpPost]
         public IActionResult Create(Category model)
         {
@@ -42,7 +40,6 @@ namespace CMS.Backend.Controllers
             return RedirectToAction("Index");
         }
 
-        // Xóa danh mục
         public IActionResult Delete(int id)
         {
             var category = _context.Categories.Find(id);
@@ -54,7 +51,6 @@ namespace CMS.Backend.Controllers
             return RedirectToAction("Index");
         }
 
-        // GET: Hiện form sửa
         [HttpGet]
         public IActionResult Edit(int id)
         {
@@ -63,13 +59,35 @@ namespace CMS.Backend.Controllers
             return View(category);
         }
 
-        // POST: Lưu thay đổi
         [HttpPost]
         public IActionResult Edit(Category model)
         {
             _context.Categories.Update(model);
             _context.SaveChanges();
             return RedirectToAction("Index");
+        }
+    }
+
+    // ← Đưa ra ngoài, cùng cấp với CategoryController
+    [Route("api/[controller]")]
+    [ApiController]
+    public class CategoriesController : ControllerBase
+    {
+        private readonly ApplicationDbContext _context;
+
+        public CategoriesController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var list = await _context.Categories
+                .OrderBy(c => c.Name)
+                .Select(c => new { c.Id, c.Name })
+                .ToListAsync();
+            return Ok(list);
         }
     }
 }

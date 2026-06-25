@@ -1,0 +1,133 @@
+/* src/components/product/ProductCard.css */
+.sn-product-card {
+    background: #FFFFFF;
+    border: 1px solid #D9D9D9;
+    border-radius: 8px;
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.sn-product-card:hover {
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+    transform: translateY(-3px);
+}
+
+.sn-product-card__media {
+    position: relative;
+    display: block;
+    aspect-ratio: 3 / 4;
+    background: #F5F5F5;
+    overflow: hidden;
+}
+
+.sn-product-card__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.sn-product-card:hover .sn-product-card__media img {
+    transform: scale(1.06);
+}
+
+.sn-product-card__badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 4px;
+    color: #FFFFFF;
+    letter-spacing: 0.3px;
+}
+
+.sn-product-card__badge--low {
+    background: #FF8C00;
+}
+
+.sn-product-card__badge--soldout {
+    background: #2C2C2C;
+}
+
+.sn-product-card__tag {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    background: rgba(26, 26, 26, 0.75);
+    color: #FFFFFF;
+    font-family: 'Be Vietnam Pro', sans-serif;
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.sn-product-card__body {
+    padding: 14px 14px 16px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.sn-product-card__title {
+    font-family: 'Be Vietnam Pro', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #2C2C2C;
+    text-decoration: none;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 12px;
+    min-height: 40px;
+}
+
+.sn-product-card__title:hover {
+    color: #E8191A;
+}
+
+.sn-product-card__footer {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+/* Signature element: tem giá kiểu vé/tag treo, font số riêng biệt Roboto Mono */
+.sn-product-card__price {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    color: #E8191A;
+}
+
+.sn-product-card__cart-btn {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    border: none;
+    border-radius: 6px;
+    background: #2C2C2C;
+    color: #FFFFFF;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.sn-product-card__cart-btn:hover:not(:disabled) {
+    background: #E8191A;
+}
+
+.sn-product-card__cart-btn:disabled {
+    background: #D9D9D9;
+    cursor: not-allowed;
+}

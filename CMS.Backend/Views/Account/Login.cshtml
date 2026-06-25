@@ -17,6 +17,9 @@
                     </div>
                     <div class="card-body p-4">
                         <form asp-action="Login" method="post">
+                            <input type="hidden" name="returnUrl"
+                                   value="@Context.Request.Query["ReturnUrl"]" />
+
                             <div class="mb-3">
                                 <label class="form-label">Tên đăng nhập</label>
                                 <input type="text" name="username" class="form-control" required />

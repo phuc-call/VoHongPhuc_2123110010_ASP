@@ -1,5 +1,4 @@
-﻿
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -38,7 +37,27 @@
             <nav class="col-md-3 col-lg-2 sidebar p-0">
                 <div class="p-3 text-center border-bottom border-secondary">
                     <h4 class="text-white">ThaiCMS Admin</h4>
+
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <small class="text-light">
+                            Xin chào, <strong>@User.Identity.Name</strong>
+                        </small>
+                        <br />
+                        <a asp-controller="Account" asp-action="Logout"
+                           class="btn btn-outline-danger btn-sm mt-2 w-100">
+                            <i class="bi bi-box-arrow-right"></i> Đăng xuất
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Login"
+                           class="btn btn-outline-light btn-sm mt-2 w-100">
+                            <i class="bi bi-box-arrow-in-right"></i> Đăng nhập
+                        </a>
+                    }
                 </div>
+
                 <div class="mt-3">
                     <a asp-controller="Home" asp-action="Index">
                         <i class="bi bi-speedometer2"></i> Bảng điều khiển

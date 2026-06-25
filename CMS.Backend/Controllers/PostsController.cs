@@ -9,62 +9,116 @@ namespace CMS.Backend.Controllers
     public class PostsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-
         public PostsController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: api/posts
+        // GET: api/posts?page=1&pageSize=12
+        // Trả về { items, totalCount } để Frontend dựng phân trang (PostGrid/Blog).
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 12)
         {
-            var posts = _context.Posts
+            if (page < 1) page = 1;
+            if (pageSize < 1 || pageSize > 100) pageSize = 12;
+
+            var query = _context.Posts
                 .Include(p => p.Category)
-                .OrderByDescending(p => p.Id)
-                .Select(p => new {
+                .OrderByDescending(p => p.Id);
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(p => new
+                {
                     p.Id,
                     p.Title,
                     p.ImageUrl,
                     p.CreatedDate,
                     CategoryName = p.Category.Name
                 })
-                .ToList();
+                .ToListAsync();
 
-            return Ok(posts);
+            return Ok(new { items, totalCount, page, pageSize });
         }
 
-        // GET: api/posts/category/1
+        // GET: api/posts/category/1?page=1&pageSize=12
         [HttpGet("category/{categoryId}")]
-        public IActionResult GetByCategory(int categoryId)
+        public async Task<IActionResult> GetByCategory(
+            int categoryId,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 12)
         {
-            var posts = _context.Posts
+            if (page < 1) page = 1;
+            if (pageSize < 1 || pageSize > 100) pageSize = 12;
+
+            var query = _context.Posts
                 .Where(p => p.CategoryId == categoryId)
-                .Select(p => new {
+                .OrderByDescending(p => p.Id);
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(p => new
+                {
                     p.Id,
                     p.Title,
                     p.ImageUrl,
                     p.CreatedDate
                 })
-                .ToList();
+                .ToListAsync();
 
-            return Ok(posts);
+            return Ok(new { items, totalCount, page, pageSize });
         }
 
         // GET: api/posts/5
         [HttpGet("{id}")]
-        public IActionResult GetDetail(int id)
+        public async Task<IActionResult> GetDetail(int id)
         {
-            var post = _context.Posts
+            var post = await _context.Posts
                 .Include(p => p.Category)
-                .FirstOrDefault(p => p.Id == id);
+                .Where(p => p.Id == id)
+                .Select(p => new
+                {
+                    p.Id,
+                    p.Title,
+                    p.Content,
+                    p.ImageUrl,
+                    p.CreatedDate,
+                    CategoryName = p.Category.Name
+                })
+                .FirstOrDefaultAsync();
 
             if (post == null)
-            {
                 return NotFound(new { message = "Không tìm thấy bài viết này trong hệ thống" });
-            }
 
             return Ok(post);
+        }
+
+        // GET: api/posts/latest?count=3
+        // Phục vụ khu vực Blog/Tin tức tại trang chủ và slide HeroBanner.
+        [HttpGet("latest")]
+        public async Task<IActionResult> GetLatest([FromQuery] int count = 3)
+        {
+            var posts = await _context.Posts
+                .Include(p => p.Category)
+                .OrderByDescending(p => p.Id)
+                .Take(count)
+                .Select(p => new
+                {
+                    p.Id,
+                    p.Title,
+                    p.ImageUrl,
+                    p.CreatedDate,
+                    CategoryName = p.Category.Name
+                })
+                .ToListAsync();
+
+            return Ok(posts);
         }
     }
 }

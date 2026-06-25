@@ -4,47 +4,364 @@
     ViewData["Title"] = "Thêm sản phẩm";
 }
 
-<div class="card shadow">
-    <div class="card-header bg-success text-white">
-        <h5 class="mb-0">THÊM SẢN PHẨM MỚI</h5>
+<style>
+    .sn-form-card {
+        background: #fff;
+        border-radius: 12px;
+        border: 0.5px solid #D9D9D9;
+        box-shadow: 0 2px 8px rgba(0,0,0,.06);
+        overflow: hidden;
+        max-width: 960px;
+    }
+
+    .sn-form-header {
+        background: #1A1A1A;
+        padding: 18px 28px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .sn-form-header h5 {
+            font-family: 'Barlow Semi Condensed', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+            margin: 0;
+        }
+
+        .sn-form-header .sn-header-accent {
+            color: #E8191A;
+        }
+
+    .sn-form-body {
+        padding: 28px;
+    }
+
+    .sn-label {
+        font-family: 'Be Vietnam Pro', sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        color: #2C2C2C;
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .sn-input, .sn-select {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid #D9D9D9;
+        border-radius: 6px;
+        font-family: 'Be Vietnam Pro', sans-serif;
+        font-size: 14px;
+        color: #3D3D3D;
+        background: #fff;
+        transition: border .2s;
+        outline: none;
+    }
+
+        .sn-input:focus, .sn-select:focus {
+            border-color: #E8191A;
+            box-shadow: 0 0 0 3px rgba(232,25,26,.08);
+        }
+
+    .sn-divider {
+        border: none;
+        border-top: 1px solid #D9D9D9;
+        margin: 24px 0;
+    }
+
+    .sn-btn-submit {
+        width: 100%;
+        background: #E8191A;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 12px;
+        font-family: 'Be Vietnam Pro', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background .2s;
+    }
+
+        .sn-btn-submit:hover {
+            background: #c41415;
+        }
+
+    .sn-btn-back {
+        width: 100%;
+        background: transparent;
+        color: #2C2C2C;
+        border: 1px solid #2C2C2C;
+        border-radius: 6px;
+        padding: 11px;
+        margin-top: 8px;
+        font-family: 'Be Vietnam Pro', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        display: block;
+        text-align: center;
+        transition: all .2s;
+    }
+
+        .sn-btn-back:hover {
+            background: #2C2C2C;
+            color: #fff;
+        }
+
+    /* Quill */
+    .ql-toolbar {
+        border-radius: 6px 6px 0 0 !important;
+        border-color: #D9D9D9 !important;
+    }
+
+    .ql-container {
+        border-radius: 0 0 6px 6px !important;
+        border-color: #D9D9D9 !important;
+        font-family: 'Be Vietnam Pro', sans-serif;
+        font-size: 14px;
+        min-height: 120px;
+    }
+
+        .ql-container:focus-within {
+            border-color: #E8191A !important;
+        }
+
+    /* Drop zone */
+    #dropZone {
+        border: 2px dashed #D9D9D9;
+        border-radius: 8px;
+        padding: 24px 16px;
+        text-align: center;
+        cursor: pointer;
+        transition: border-color .2s, background .2s;
+        background: #FAFAFA;
+        position: relative;
+    }
+
+        #dropZone.drag-over {
+            border-color: #E8191A;
+            background: #FFF5F5;
+        }
+</style>
+
+<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet" />
+
+<div class="sn-form-card">
+    <div class="sn-form-header">
+        <i class="bi bi-plus-circle" style="color:#E8191A;font-size:20px;"></i>
+        <h5>Thêm <span class="sn-header-accent">sản phẩm</span> mới</h5>
     </div>
-    <div class="card-body">
-        <form asp-action="Create" method="post" enctype="multipart/form-data">
-            <div class="row">
+    <div class="sn-form-body">
+        <form asp-action="Create" method="post" enctype="multipart/form-data" id="createForm">
+            <div class="row g-4">
+
+                <!-- Cột trái -->
                 <div class="col-md-8">
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Tên sản phẩm:</label>
-                        <input asp-for="Name" class="form-control" required />
+                        <label class="sn-label">
+                            Tên sản phẩm <span style="color:#E8191A">*</span>
+                        </label>
+                        <input asp-for="Name" class="sn-input"
+                               placeholder="Nhập tên sản phẩm..." required />
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Mô tả:</label>
-                        <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                        <label class="sn-label">Mô tả sản phẩm</label>
+                        <div id="descEditor" style="min-height:140px;"></div>
+                        <textarea asp-for="Description" id="descHidden"
+                                  style="display:none;"></textarea>
                     </div>
                 </div>
+
+                <!-- Cột phải -->
                 <div class="col-md-4">
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Giá (VNĐ):</label>
-                        <input asp-for="Price" class="form-control" type="number" min="0" />
+                        <label class="sn-label">Giá (VNĐ)</label>
+                        <input asp-for="Price" class="sn-input" type="number" min="0"
+                               placeholder="0"
+                               style="font-family:'Roboto Mono',monospace;" />
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Số lượng tồn:</label>
-                        <input asp-for="StockQuantity" class="form-control" type="number" min="0" />
+                        <label class="sn-label">Số lượng tồn kho</label>
+                        <input asp-for="StockQuantity" class="sn-input"
+                               type="number" min="0" placeholder="0" />
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Danh mục:</label>
-                        <select asp-for="CategoryProductId" class="form-select"
+                        <label class="sn-label">Danh mục</label>
+                        <select asp-for="CategoryProductId" class="sn-select"
                                 asp-items="ViewBag.CategoryProductList">
                             <option value="">-- Chọn danh mục --</option>
                         </select>
                     </div>
+
+                    <!-- Vùng kéo thả ảnh -->
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Hình ảnh:</label>
-                        <input type="file" name="uploadImage" class="form-control" accept="image/*" />
+                        <label class="sn-label">Hình ảnh sản phẩm</label>
+                        <div id="dropZone">
+                            <!-- Placeholder -->
+                            <div id="dropPlaceholder">
+                                <i class="bi bi-cloud-arrow-up"
+                                   style="font-size:32px;color:#D9D9D9;"></i>
+                                <p style="margin:8px 0 4px;
+                                    font-family:'Be Vietnam Pro',sans-serif;
+                                    font-size:14px;color:#888;">
+                                    Kéo thả ảnh vào đây
+                                </p>
+                                <p style="margin:0;
+                                    font-family:'Be Vietnam Pro',sans-serif;
+                                    font-size:12px;color:#AAA;">
+                                    hoặc
+                                    <span style="color:#E8191A;font-weight:600;cursor:pointer;"
+                                          onclick="document.getElementById('imgInput').click()">
+                                        chọn từ máy tính
+                                    </span>
+                                </p>
+                                <p style="margin:6px 0 0;
+                                    font-family:'Be Vietnam Pro',sans-serif;
+                                    font-size:11px;color:#CCC;">
+                                    Hoặc nhấn Ctrl+V để dán ảnh
+                                </p>
+                            </div>
+
+                            <!-- Preview -->
+                            <div id="imgPreview" style="display:none;">
+                                <img id="previewImg" style="
+                                    max-width:100%; max-height:180px;
+                                    object-fit:cover; border-radius:8px;
+                                    border:1px solid #D9D9D9;" />
+                                <button type="button" id="removeImg" style="
+                                    display:block; margin:8px auto 0;
+                                    background:transparent;
+                                    border:1px solid #E8191A;
+                                    color:#E8191A; border-radius:6px;
+                                    padding:4px 14px; font-size:12px;
+                                    font-family:'Be Vietnam Pro',sans-serif;
+                                    cursor:pointer;">
+                                    Xóa ảnh
+                                </button>
+                            </div>
+
+                            <!-- Input ẩn -->
+                            <input type="file" name="uploadImage" id="imgInput"
+                                   accept="image/*" style="display:none;" />
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-success w-100">Lưu sản phẩm</button>
-                    <a asp-action="Index" class="btn btn-secondary w-100 mt-2">Quay lại</a>
+
+                    <hr class="sn-divider" />
+                    <button type="submit" class="sn-btn-submit">
+                        <i class="bi bi-check-circle me-1"></i> Lưu sản phẩm
+                    </button>
+                    <a asp-action="Index" class="sn-btn-back">Quay lại</a>
                 </div>
+
             </div>
         </form>
     </div>
 </div>
+
+<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+<script>
+    // ── Quill ──────────────────────────────────────────
+    var quill = new Quill('#descEditor', {
+        theme: 'snow',
+        placeholder: 'Nhập mô tả sản phẩm...',
+        modules: {
+            toolbar: [
+                ['bold', 'italic', 'underline'],
+                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                ['link'],
+                ['clean']
+            ]
+        }
+    });
+
+    document.getElementById('createForm').addEventListener('submit', function () {
+        document.getElementById('descHidden').value = quill.root.innerHTML;
+    });
+
+    // ── Drag & Drop ────────────────────────────────────
+    const dropZone = document.getElementById('dropZone');
+    const imgInput = document.getElementById('imgInput');
+    const previewImg = document.getElementById('previewImg');
+    const imgPreview = document.getElementById('imgPreview');
+    const dropPlaceholder = document.getElementById('dropPlaceholder');
+    const removeImg = document.getElementById('removeImg');
+
+    function showPreview(file) {
+        if (!file || !file.type.startsWith('image/')) return;
+        const reader = new FileReader();
+        reader.onload = function (ev) {
+            previewImg.src = ev.target.result;
+            imgPreview.style.display = 'block';
+            dropPlaceholder.style.display = 'none';
+            dropZone.style.borderColor = '#E8191A';
+            dropZone.style.background = '#FFF5F5';
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function assignFile(file) {
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        imgInput.files = dt.files;
+        showPreview(file);
+    }
+
+    // Click vùng drop → mở picker
+    dropZone.addEventListener('click', function (e) {
+        if (removeImg.contains(e.target)) return;
+        if (imgPreview.style.display === 'none') imgInput.click();
+    });
+
+    // Chọn file qua input
+    imgInput.addEventListener('change', function (e) {
+        if (e.target.files[0]) showPreview(e.target.files[0]);
+    });
+
+    // Drag over
+    dropZone.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        dropZone.classList.add('drag-over');
+    });
+
+    dropZone.addEventListener('dragleave', function () {
+        dropZone.classList.remove('drag-over');
+        if (imgPreview.style.display === 'none') {
+            dropZone.style.borderColor = '#D9D9D9';
+            dropZone.style.background = '#FAFAFA';
+        }
+    });
+
+    // Drop file
+    dropZone.addEventListener('drop', function (e) {
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
+        const file = e.dataTransfer.files[0];
+        if (file) assignFile(file);
+    });
+
+    // Paste từ clipboard (Ctrl+V, kéo từ Zalo/web)
+    document.addEventListener('paste', function (e) {
+        const items = e.clipboardData?.items;
+        if (!items) return;
+        for (const item of items) {
+            if (item.type.startsWith('image/')) {
+                assignFile(item.getAsFile());
+                break;
+            }
+        }
+    });
+
+    // Xóa ảnh
+    removeImg.addEventListener('click', function (e) {
+        e.stopPropagation();
+        imgInput.value = '';
+        previewImg.src = '';
+        imgPreview.style.display = 'none';
+        dropPlaceholder.style.display = 'block';
+        dropZone.style.borderColor = '#D9D9D9';
+        dropZone.style.background = '#FAFAFA';
+    });
+</script>

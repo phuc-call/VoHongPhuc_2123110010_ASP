@@ -1,0 +1,36 @@
+/* src/components/common/EmptyState.css */
+.sn-empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #888888;
+}
+
+.sn-empty-state__icon {
+    font-size: 48px;
+    color: #D9D9D9;
+    margin-bottom: 16px;
+    display: block;
+}
+
+.sn-empty-state__message {
+    font-family: 'Be Vietnam Pro', sans-serif;
+    font-size: 15px;
+    margin-bottom: 16px;
+}
+
+.sn-empty-state__action {
+    font-family: 'Be Vietnam Pro', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #FFFFFF;
+    background: #E8191A;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 24px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.sn-empty-state__action:hover {
+    background: #c41315;
+}

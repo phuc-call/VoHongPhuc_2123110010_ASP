@@ -108,7 +108,7 @@ namespace CMS.Backend.Controllers
                 }
             }
 
-            _context.Posts.Update(model);
+            _context.Posts.Update(model);   
             _context.SaveChanges();
             return RedirectToAction("Index");
         }

@@ -4,41 +4,356 @@
     ViewData["Title"] = "Sản phẩm";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="text-dark">DANH SÁCH SẢN PHẨM</h2>
-    <a asp-action="Create" class="btn btn-success">
+<style>
+    .sn-admin-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+    }
+
+    .sn-admin-title {
+        font-family: 'Barlow Semi Condensed', sans-serif;
+        font-size: 28px;
+        font-weight: 700;
+        color: #2C2C2C;
+        margin: 0;
+    }
+
+    .sn-btn-primary {
+        background: #E8191A;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 9px 20px;
+        font-family: 'Be Vietnam Pro', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: background .2s;
+    }
+
+    .sn-btn-primary:hover { background: #c41415; color: #fff; }
+
+    .sn-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    }
+
+    .sn-table thead tr { background: #1A1A1A; }
+
+    .sn-table thead th {
+        font-family: 'Be Vietnam Pro', sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        color: #fff;
+        padding: 14px 16px;
+        border: none;
+    }
+
+    .sn-table tbody tr {
+        border-bottom: 1px solid #D9D9D9;
+        transition: background .15s;
+    }
+
+    .sn-table tbody tr:hover { background: #FFF5F5; }
+
+    .sn-table tbody td {
+        font-family: 'Be Vietnam Pro', sans-serif;
+        font-size: 14px;
+        color: #3D3D3D;
+        padding: 12px 16px;
+        vertical-align: middle;
+    }
+
+    .sn-product-img {
+        width: 56px; height: 56px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid #D9D9D9;
+    }
+
+    .sn-price {
+        font-family: 'Roboto Mono', monospace;
+        font-size: 14px; font-weight: 700;
+        color: #E8191A;
+    }
+
+    .sn-stock { font-size: 13px; color: #888; }
+
+    .sn-badge-cat {
+        display: inline-block;
+        background: #FFF3E0; color: #FF8C00;
+        border: 1px solid #FF8C00;
+        border-radius: 4px; padding: 2px 10px;
+        font-size: 12px; font-weight: 600;
+    }
+
+    .sn-btn-edit {
+        background: transparent; color: #2C2C2C;
+        border: 1px solid #2C2C2C; border-radius: 6px;
+        padding: 5px 12px; font-size: 13px; font-weight: 600;
+        text-decoration: none; transition: all .2s;
+        font-family: 'Be Vietnam Pro', sans-serif;
+    }
+
+    .sn-btn-edit:hover { background: #2C2C2C; color: #fff; }
+
+    .sn-btn-delete {
+        background: transparent; color: #E8191A;
+        border: 1px solid #E8191A; border-radius: 6px;
+        padding: 5px 12px; font-size: 13px; font-weight: 600;
+        text-decoration: none; transition: all .2s;
+        font-family: 'Be Vietnam Pro', sans-serif;
+    }
+
+    .sn-btn-delete:hover { background: #E8191A; color: #fff; }
+
+    /* Phân trang */
+    .sn-pagination {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .sn-pagination-info {
+        font-family: 'Be Vietnam Pro', sans-serif;
+        font-size: 13px;
+        color: #888;
+    }
+
+    .sn-pagination-pages {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+    }
+
+    .sn-page-btn {
+        min-width: 36px; height: 36px;
+        border: 1px solid #D9D9D9;
+        border-radius: 6px;
+        background: #fff;
+        color: #2C2C2C;
+        font-family: 'Be Vietnam Pro', sans-serif;
+        font-size: 13px; font-weight: 600;
+        cursor: pointer;
+        transition: all .2s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 10px;
+    }
+
+    .sn-page-btn:hover:not(:disabled) {
+        border-color: #E8191A;
+        color: #E8191A;
+    }
+
+    .sn-page-btn.active {
+        background: #E8191A;
+        border-color: #E8191A;
+        color: #fff;
+    }
+
+    .sn-page-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+
+    /* Loading skeleton */
+    .sn-skeleton td {
+        padding: 12px 16px;
+    }
+
+    .sn-skeleton-bar {
+        height: 16px;
+        background: linear-gradient(90deg, #F5F5F5 25%, #E8E8E8 50%, #F5F5F5 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.2s infinite;
+        border-radius: 4px;
+    }
+
+    @@keyframes shimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+</style>
+
+<div class="sn-admin-header">
+    <h2 class="sn-admin-title">Danh sách sản phẩm</h2>
+    <a asp-action="Create" class="sn-btn-primary">
         <i class="bi bi-plus-circle"></i> Thêm sản phẩm mới
     </a>
 </div>
 
-<table class="table table-hover shadow-sm border">
-    <thead class="table-light">
+<table class="sn-table" id="productTable">
+    <thead>
         <tr>
             <th>ID</th>
+            <th>Hình ảnh</th>
             <th>Tên sản phẩm</th>
             <th>Giá</th>
             <th>Tồn kho</th>
             <th>Danh mục</th>
-            <th style="width:150px">Thao tác</th>
+            <th style="width:140px">Thao tác</th>
         </tr>
     </thead>
-    <tbody>
-        @foreach (var item in Model)
+    <tbody id="tableBody">
+        <!-- Skeleton loading ban đầu -->
+        @for (int i = 0; i < 5; i++)
         {
-            <tr>
-                <td>@item.Id</td>
-                <td>@item.Name</td>
-                <td>@item.Price.ToString("N0") đ</td>
-                <td>@item.StockQuantity</td>
-                <td>@item.CategoryProduct?.Name</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id"
-                       class="btn btn-sm btn-outline-warning">Sửa</a>
-                    <a asp-action="Delete" asp-route-id="@item.Id"
-                       class="btn btn-sm btn-outline-danger"
-                       onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')">Xóa</a>
-                </td>
+            <tr class="sn-skeleton">
+                <td><div class="sn-skeleton-bar" style="width:30px;"></div></td>
+                <td><div style="width:56px;height:56px;background:#F0F0F0;border-radius:8px;"></div></td>
+                <td><div class="sn-skeleton-bar" style="width:140px;"></div></td>
+                <td><div class="sn-skeleton-bar" style="width:80px;"></div></td>
+                <td><div class="sn-skeleton-bar" style="width:40px;"></div></td>
+                <td><div class="sn-skeleton-bar" style="width:80px;"></div></td>
+                <td><div class="sn-skeleton-bar" style="width:100px;"></div></td>
             </tr>
         }
     </tbody>
 </table>
+
+<!-- Phân trang -->
+<div class="sn-pagination">
+    <span class="sn-pagination-info" id="pageInfo">Đang tải...</span>
+    <div class="sn-pagination-pages" id="pageButtons"></div>
+</div>
+
+<script>
+    const PAGE_SIZE = 5;
+    let currentPage = 1;
+    let totalPages = 1;
+
+    async function loadProducts(page) {
+        currentPage = page;
+
+        try {
+            const res = await fetch(`/api/products?page=${page}&pageSize=${PAGE_SIZE}`);
+            const data = await res.json();
+
+            const items = data.items || [];
+            const totalCount = data.totalCount || 0;
+            totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+
+            renderTable(items);
+            renderPagination(totalCount);
+        } catch (err) {
+            document.getElementById('tableBody').innerHTML = `
+                <tr>
+                    <td colspan="7" style="text-align:center;padding:32px;
+                        font-family:'Be Vietnam Pro',sans-serif;color:#888;">
+                        Không thể tải dữ liệu. <a href="javascript:loadProducts(1)"
+                        style="color:#E8191A;">Thử lại</a>
+                    </td>
+                </tr>`;
+        }
+    }
+
+    function renderTable(items) {
+        const tbody = document.getElementById('tableBody');
+
+        if (items.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" style="text-align:center;padding:40px;
+                        font-family:'Be Vietnam Pro',sans-serif;color:#888;">
+                        Chưa có sản phẩm nào.
+                    </td>
+                </tr>`;
+            return;
+        }
+
+        tbody.innerHTML = items.map(item => `
+            <tr>
+                <td style="color:#888;font-size:13px;">#${item.id}</td>
+                <td>
+                    ${item.imageUrl
+                        ? `<img src="${item.imageUrl}" class="sn-product-img"
+                               onerror="this.style.display='none'" />`
+                        : `<div style="width:56px;height:56px;background:#F5F5F5;
+                               border-radius:8px;display:flex;align-items:center;
+                               justify-content:center;border:1px solid #D9D9D9;">
+                               <i class="bi bi-image" style="color:#AAA;font-size:18px;"></i>
+                           </div>`
+                    }
+                </td>
+                <td style="font-weight:600;color:#2C2C2C;">${item.name}</td>
+                <td><span class="sn-price">${Number(item.price).toLocaleString('vi-VN')} đ</span></td>
+                <td><span class="sn-stock">${item.stockQuantity} sp</span></td>
+                <td>
+                    ${item.categoryName
+                        ? `<span class="sn-badge-cat">${item.categoryName}</span>`
+                        : ''}
+                </td>
+                <td style="display:flex;gap:6px;">
+                    <a href="/Product/Edit/${item.id}" class="sn-btn-edit">Sửa</a>
+                    <a href="/Product/Delete/${item.id}" class="sn-btn-delete"
+                       onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')">
+                       Xóa
+                    </a>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function renderPagination(totalCount) {
+        const start = (currentPage - 1) * PAGE_SIZE + 1;
+        const end   = Math.min(currentPage * PAGE_SIZE, totalCount);
+
+        document.getElementById('pageInfo').textContent =
+            totalCount > 0
+                ? `Hiển thị ${start}–${end} / ${totalCount} sản phẩm`
+                : 'Không có sản phẩm';
+
+        const container = document.getElementById('pageButtons');
+        let html = '';
+
+        // Nút Prev
+        html += `<button class="sn-page-btn" onclick="loadProducts(${currentPage - 1})"
+                    ${currentPage === 1 ? 'disabled' : ''}>
+                    <i class="bi bi-chevron-left"></i>
+                 </button>`;
+
+        // Số trang — hiển thị tối đa 5 nút, có dấu ...
+        const range = getPageRange(currentPage, totalPages);
+        for (const p of range) {
+            if (p === '...') {
+                html += `<span style="padding:0 4px;color:#888;font-size:13px;">...</span>`;
+            } else {
+                html += `<button class="sn-page-btn ${p === currentPage ? 'active' : ''}"
+                            onclick="loadProducts(${p})">${p}</button>`;
+            }
+        }
+
+        // Nút Next
+        html += `<button class="sn-page-btn" onclick="loadProducts(${currentPage + 1})"
+                    ${currentPage === totalPages ? 'disabled' : ''}>
+                    <i class="bi bi-chevron-right"></i>
+                 </button>`;
+
+        container.innerHTML = html;
+    }
+
+    function getPageRange(current, total) {
+        if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+
+        if (current <= 4) return [1, 2, 3, 4, 5, '...', total];
+        if (current >= total - 3) return [1, '...', total-4, total-3, total-2, total-1, total];
+        return [1, '...', current-1, current, current+1, '...', total];
+    }
+
+    // Load trang đầu khi vào
+    loadProducts(1);
+</script>

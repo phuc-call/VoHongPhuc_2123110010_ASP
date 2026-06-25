@@ -4,52 +4,234 @@
     ViewData["Title"] = "Sửa sản phẩm";
 }
 
-<div class="card shadow">
-    <div class="card-header bg-warning text-dark">
-        <h5 class="mb-0">CHỈNH SỬA SẢN PHẨM</h5>
+<style>
+    /* Dùng lại toàn bộ style từ Create, chỉ đổi màu header */
+    .sn-form-card {
+        background: #fff;
+        border-radius: 12px;
+        border: 0.5px solid #D9D9D9;
+        box-shadow: 0 2px 8px rgba(0,0,0,.06);
+        overflow: hidden;
+        max-width: 960px;
+    }
+
+    .sn-form-header {
+        background: #FF8C00;
+        padding: 18px 28px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .sn-form-header h5 {
+            font-family: 'Barlow Semi Condensed', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+            margin: 0;
+        }
+
+    .sn-form-body {
+        padding: 28px;
+    }
+
+    .sn-label {
+        font-family: 'Be Vietnam Pro', sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        color: #2C2C2C;
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .sn-input, .sn-select {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid #D9D9D9;
+        border-radius: 6px;
+        font-family: 'Be Vietnam Pro', sans-serif;
+        font-size: 14px;
+        color: #3D3D3D;
+        background: #fff;
+        transition: border .2s;
+        outline: none;
+    }
+
+        .sn-input:focus, .sn-select:focus {
+            border-color: #FF8C00;
+            box-shadow: 0 0 0 3px rgba(255,140,0,.1);
+        }
+
+    .sn-divider {
+        border: none;
+        border-top: 1px solid #D9D9D9;
+        margin: 24px 0;
+    }
+
+    .sn-btn-submit {
+        width: 100%;
+        background: #FF8C00;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 12px;
+        font-family: 'Be Vietnam Pro', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background .2s;
+    }
+
+        .sn-btn-submit:hover {
+            background: #e07b00;
+        }
+
+    .sn-btn-back {
+        width: 100%;
+        background: transparent;
+        color: #2C2C2C;
+        border: 1px solid #2C2C2C;
+        border-radius: 6px;
+        padding: 11px;
+        margin-top: 8px;
+        font-family: 'Be Vietnam Pro', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        display: block;
+        text-align: center;
+        transition: all .2s;
+    }
+
+        .sn-btn-back:hover {
+            background: #2C2C2C;
+            color: #fff;
+        }
+
+    .ql-toolbar {
+        border-radius: 6px 6px 0 0 !important;
+        border-color: #D9D9D9 !important;
+    }
+
+    .ql-container {
+        border-radius: 0 0 6px 6px !important;
+        border-color: #D9D9D9 !important;
+        font-family: 'Be Vietnam Pro', sans-serif;
+        font-size: 14px;
+        min-height: 120px;
+    }
+</style>
+
+<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet" />
+
+<div class="sn-form-card">
+    <div class="sn-form-header">
+        <i class="bi bi-pencil-square" style="font-size:20px;"></i>
+        <h5>Chỉnh sửa sản phẩm</h5>
     </div>
-    <div class="card-body">
-        <form asp-action="Edit" method="post" enctype="multipart/form-data">
+    <div class="sn-form-body">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data" id="editForm">
             <input type="hidden" asp-for="Id" />
-            <div class="row">
+            <div class="row g-4">
+                <!-- Cột trái -->
                 <div class="col-md-8">
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Tên sản phẩm:</label>
-                        <input asp-for="Name" class="form-control" required />
+                        <label class="sn-label">Tên sản phẩm <span style="color:#E8191A">*</span></label>
+                        <input asp-for="Name" class="sn-input" required />
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Mô tả:</label>
-                        <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                        <label class="sn-label">Mô tả sản phẩm</label>
+                        <div id="descEditor" style="min-height:140px;"></div>
+                        <textarea asp-for="Description" id="descHidden" style="display:none;">@Model.Description</textarea>
                     </div>
                 </div>
+
+                <!-- Cột phải -->
                 <div class="col-md-4">
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Giá (VNĐ):</label>
-                        <input asp-for="Price" class="form-control" type="number" min="0" />
+                        <label class="sn-label">Giá (VNĐ)</label>
+                        <input asp-for="Price" class="sn-input" type="number" min="0"
+                               style="font-family:'Roboto Mono',monospace;" />
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Số lượng tồn:</label>
-                        <input asp-for="StockQuantity" class="form-control" type="number" min="0" />
+                        <label class="sn-label">Số lượng tồn kho</label>
+                        <input asp-for="StockQuantity" class="sn-input" type="number" min="0" />
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Danh mục:</label>
-                        <select asp-for="CategoryProductId" class="form-select"
+                        <label class="sn-label">Danh mục</label>
+                        <select asp-for="CategoryProductId" class="sn-select"
                                 asp-items="ViewBag.CategoryProductList">
                             <option value="">-- Chọn danh mục --</option>
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Ảnh mới (để trống nếu không đổi):</label>
-                        <input type="file" name="uploadImage" class="form-control" accept="image/*" />
-                        @if (!string.IsNullOrEmpty(Model.ImageUrl))
-                        {
-                            <img src="@Model.ImageUrl" class="img-thumbnail mt-2" style="height:80px" />
-                        }
+                        <label class="sn-label">Ảnh mới <span style="color:#888;font-weight:400">(để trống nếu không đổi)</span></label>
+                        <input type="file" name="uploadImage" class="sn-input"
+                               accept="image/*" id="imgInput" />
+                        <!-- Ảnh hiện tại hoặc preview -->
+                        <div id="imgPreview" style="margin-top:10px;">
+                            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                            {
+                                <img id="previewImg" src="@Model.ImageUrl"
+                                     style="width:100%;max-height:160px;object-fit:cover;
+                                         border-radius:8px;border:1px solid #D9D9D9;" />
+                            }
+                            else
+                            {
+                                <img id="previewImg" style="width:100%;max-height:160px;
+                                    object-fit:cover;border-radius:8px;
+                                    border:1px solid #D9D9D9;display:none;" />
+                            }
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-warning w-100">Cập nhật</button>
-                    <a asp-action="Index" class="btn btn-secondary w-100 mt-2">Quay lại</a>
+
+                    <hr class="sn-divider" />
+                    <button type="submit" class="sn-btn-submit">
+                        <i class="bi bi-check-circle me-1"></i> Cập nhật sản phẩm
+                    </button>
+                    <a asp-action="Index" class="sn-btn-back">Quay lại</a>
                 </div>
             </div>
         </form>
     </div>
 </div>
+
+<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+<script>
+    // Khởi tạo Quill với nội dung hiện tại
+    var quill = new Quill('#descEditor', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                ['bold', 'italic', 'underline'],
+                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                ['link'],
+                ['clean']
+            ]
+        }
+    });
+
+    // Load nội dung cũ vào editor
+    var existingContent = document.getElementById('descHidden').value;
+    if (existingContent) {
+        quill.root.innerHTML = existingContent;
+    }
+
+    // Sync trước khi submit
+    document.getElementById('editForm').addEventListener('submit', function () {
+        document.getElementById('descHidden').value = quill.root.innerHTML;
+    });
+
+    // Preview ảnh mới
+    document.getElementById('imgInput').addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function (ev) {
+            var img = document.getElementById('previewImg');
+            img.src = ev.target.result;
+            img.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    });
+</script>
